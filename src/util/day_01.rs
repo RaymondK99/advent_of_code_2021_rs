@@ -28,24 +28,13 @@ fn part1(list:Vec<u32>) -> String {
 
 fn part2(list:Vec<u32>) -> String {
     let mut cnt = 0;
-    let mut current_window = 0;
-    let mut last_window;
+    
+    for i in 3..list.len() {
+        let curr = list[i-2] + list[i-1] + list[i];
+        let last = list[i-3] + list[i-2] + list[i-1];
 
-    for i in 0..list.len() {
-
-        last_window = current_window;
-        current_window = 0;
-
-        if i < 2 {
-            continue;
-        }
-
-        for j in i-2..=i {
-            current_window += list[j]
-        }
-
-        if last_window != 0 && current_window > last_window {
-            cnt += 1;
+        if curr > last {
+            cnt +=1;
         }
     }
 
