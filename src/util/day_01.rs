@@ -28,7 +28,7 @@ fn part1(list:Vec<u32>) -> String {
 
 fn part2(list:Vec<u32>) -> String {
     let mut cnt = 0;
-    
+
     for i in 3..list.len() {
         let curr = list[i-2] + list[i-1] + list[i];
         let last = list[i-3] + list[i-2] + list[i-1];
