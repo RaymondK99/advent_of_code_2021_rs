@@ -31,8 +31,7 @@ fn part1(lines:Vec<&str>) -> String {
             })
         .sum();
 
-    let type_size_bits = size_of::<u32>() * 8;
-    let epsilon = !gamma << type_size_bits - width >> type_size_bits - width;
+    let epsilon = !gamma & ((1 << width) - 1);
 
     (gamma * epsilon).to_string()
 }
