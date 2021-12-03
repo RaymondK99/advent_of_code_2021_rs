@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
@@ -18,7 +19,7 @@ fn count_ones(lines:&Vec<&str>, pos:usize) -> usize {
 fn part1(lines:Vec<&str>) -> String {
     let width = lines.iter().next().unwrap().len();
     let no_lines = lines.len();
-    
+
     let gamma:u32 = (0..width)
         .map(|pos| count_ones(&lines, pos))
        .rev().enumerate()
@@ -30,7 +31,8 @@ fn part1(lines:Vec<&str>) -> String {
             })
         .sum();
 
-    let epsilon = !gamma << 32 - width >> 32 - width;
+    let type_size_bits = size_of::<u32>() * 8;
+    let epsilon = !gamma << type_size_bits - width >> type_size_bits - width;
 
     (gamma * epsilon).to_string()
 }
