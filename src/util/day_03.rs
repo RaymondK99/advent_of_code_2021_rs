@@ -18,16 +18,16 @@ fn count_ones(lines:&Vec<&str>, pos:usize) -> usize {
 fn part1(lines:Vec<&str>) -> String {
     let width = lines.iter().next().unwrap().len();
     let no_lines = lines.len();
-
-   let gamma:u32 = (0..width)
+    
+    let gamma:u32 = (0..width)
         .map(|pos| count_ones(&lines, pos))
        .rev().enumerate()
         .map(|(index, cnt)|
             if cnt > no_lines/2 {
-            1 << index
+                1 << index
             } else {
                 0
-            } )
+            })
         .sum();
 
     let epsilon = !gamma << 32 - width >> 32 - width;
