@@ -11,12 +11,12 @@ pub fn solve(input : String, part: Part) -> String {
     }
 }
 
-fn count_ones(lines:&Vec<&str>, pos:usize) -> usize {
+fn count_ones(lines:&[&str], pos:usize) -> usize {
     lines.iter().filter( |&line| *line.as_bytes().get(pos).unwrap() == 0x31 ).count()
 }
 
 fn part1(lines:Vec<&str>) -> String {
-    let width = lines.iter().next().unwrap().len();
+    let width = lines.first().unwrap().len();
     let no_lines = lines.len();
 
     let gamma:u32 = (0..width)
@@ -55,7 +55,7 @@ fn filter_value(lines:&mut Vec<&str>, pos:usize, filter_ones:bool) {
 }
 
 fn reduce(mut lines: Vec<&str>, filter_ones:bool) -> u32 {
-    let width = lines.iter().next().unwrap().len();
+    let width = lines.first().unwrap().len();
     let mut i = 0;
 
     while lines.len() > 1 && i < width {

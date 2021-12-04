@@ -1,14 +1,11 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashSet};
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
 
-    let numbers:Vec<&str> = input.split("\n\n")
-        .collect();
-
     match part {
-        Part::Part1 => part1(numbers),
-        Part::Part2 => part2(numbers)
+        Part::Part1 => part1(input.as_str()),
+        Part::Part2 => part2(input.as_str())
     }
 }
 
@@ -35,36 +32,31 @@ impl Board {
             rows_and_cols.push(set_col);
         }
 
-        Board{ board_numbers: numbers.iter().copied().collect(), rows_and_cols}
+        Board{board_numbers: numbers.iter().copied().collect(), rows_and_cols}
     }
 
-    fn has_bingo(self:&Board, numbers:&Vec<u32>) -> bool {
-        let number_set:HashSet<u32> = numbers.iter().cloned().collect();
-
-        // Does any row or column have bingo?
-        self.rows_and_cols.iter()
-            .find( |s| s.is_subset(&number_set)).is_some()
+    fn draw_number(self:&mut Board, number:u32) {
+        self.board_numbers.remove(&number);
+        self.rows_and_cols.iter_mut().for_each(|c| { c.remove(&number);});
     }
 
-    fn get_score(self:&Board, numbers:&Vec<u32>) -> u32 {
-        let number_set:HashSet<u32> = numbers.iter().cloned().collect();
+    fn has_bingo(self:&Board) -> bool {
+        self.rows_and_cols.iter().any( |c| c.is_empty())
+    }
 
-        self.board_numbers
-            .difference(&number_set)
-            .copied()
-            .sum::<u32>() * numbers.last().unwrap()
-
+    fn get_remaining_sum(self:&Board) -> u32 {
+        self.board_numbers.iter().sum::<u32>()
     }
 }
 
-fn parse_game_context(list:Vec<&str>) -> (VecDeque<u32>, Vec<Board>) {
-    let mut it = list.iter();
+fn parse_game_context(input:&str) -> (Vec<u32>, Vec<Board>) {
+    let mut it = input.split("\n\n");
 
-    let numbers:VecDeque<u32>  = it.next().unwrap().split(",")
+    let numbers  = it.next().unwrap().split(',')
         .map(|item| item.parse().unwrap())
         .collect();
 
-    let boards:Vec<Board> = it.map( |item| Board::new(item.split(|c| c == '\n' || c == ' ')
+    let boards = it.map( |item| Board::new(item.split(|c| c == '\n' || c == ' ')
         .filter(|s| !s.is_empty())
         .map(|s| s.parse().unwrap())
         .collect())).collect();
@@ -72,18 +64,16 @@ fn parse_game_context(list:Vec<&str>) -> (VecDeque<u32>, Vec<Board>) {
     (numbers, boards)
 }
 
-fn part1(list:Vec<&str>) -> String {
+fn part1(input:&str) -> String {
 
-    let (mut numbers, boards) = parse_game_context(list);
-    let mut drawn_numbers = vec![];
+    let (numbers, mut boards) = parse_game_context(input);
 
-    for _ in 0..numbers.len() {
-        drawn_numbers.push(numbers.pop_front().unwrap());
+    for number in numbers.iter() {
+        // Draw number
+        boards.iter_mut().for_each(|b| {b.draw_number(*number)});
 
-        let winning_board = boards.iter().find(|b| b.has_bingo(&drawn_numbers));
-
-        if winning_board.is_some() {
-            return winning_board.unwrap().get_score(&drawn_numbers).to_string()
+        if let Some(winning_board) = boards.iter().find(|board| board.has_bingo()) {
+            return (winning_board.get_remaining_sum() * *number).to_string()
         }
     }
 
@@ -91,20 +81,20 @@ fn part1(list:Vec<&str>) -> String {
 }
 
 
-fn part2(list:Vec<&str>) -> String {
+fn part2(input:&str) -> String {
 
-    let (mut numbers, mut boards) = parse_game_context(list);
-    let mut drawn_numbers = vec![];
+    let (numbers, mut boards) = parse_game_context(input);
 
-    for _ in 0..numbers.len() {
-        drawn_numbers.push(numbers.pop_front().unwrap());
+    for number in numbers.iter() {
+        // Draw number
+        boards.iter_mut().for_each(|b| {b.draw_number(*number)});
 
         if boards.len() > 1 {
             // Remove all boards with bingo
             let mut i = 0;
             while i < boards.len() {
 
-                if boards.get(i).unwrap().has_bingo(&drawn_numbers) {
+                if boards.get(i).unwrap().has_bingo() {
                     // remove board
                     boards.remove(i);
                 } else {
@@ -114,8 +104,9 @@ fn part2(list:Vec<&str>) -> String {
         } else {
             // Only one board remaining, play it until it has bingo...
             let remaining_board = boards.first().unwrap();
-            if remaining_board.has_bingo(&drawn_numbers) {
-                return remaining_board.get_score(&drawn_numbers).to_string();
+
+            if remaining_board.has_bingo() {
+                return (remaining_board.get_remaining_sum() * *number).to_string();
             }
         }
     }

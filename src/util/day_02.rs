@@ -12,7 +12,7 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 fn map_to_pos(line:&str) -> (i32, i32) {
-    let mut it = line.split(" ");
+    let mut it = line.split(' ');
     let cmd = it.next().unwrap();
     let value = it.next().unwrap().parse().unwrap();
 
