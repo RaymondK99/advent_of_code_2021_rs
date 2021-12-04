@@ -1,4 +1,3 @@
-use std::mem::size_of;
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
@@ -75,7 +74,7 @@ fn reduce(mut lines: Vec<&str>, filter_ones:bool) -> u32 {
     fold_to_value(lines.first().unwrap())
 }
 
-fn part2(mut lines:Vec<&str>) -> String {
+fn part2(lines:Vec<&str>) -> String {
     let oxygen_gen_rating = reduce(lines.clone(), true);
     let c02_scrubber_rating = reduce(lines, false);
 
