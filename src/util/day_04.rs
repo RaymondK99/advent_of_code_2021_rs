@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
@@ -38,31 +38,29 @@ impl Board {
         Board{ board_numbers: numbers.iter().copied().collect(), rows_and_cols}
     }
 
-    fn has_bingo(self:&Board, numbers:&Vec<u32>) -> Option<u32> {
+    fn has_bingo(self:&Board, numbers:&Vec<u32>) -> bool {
         let number_set:HashSet<u32> = numbers.iter().cloned().collect();
 
         // Does any row or column have bingo?
-        let result = self.rows_and_cols.iter()
-            .find( |s| s.is_subset(&number_set));
+        self.rows_and_cols.iter()
+            .find( |s| s.is_subset(&number_set)).is_some()
+    }
 
-        // If so, calculate the sum of remaining numbers of board multiplied with last drawn number
-        if result.is_some() {
-            let rest_sum:u32 = self.board_numbers
-                .difference(&number_set)
-                .copied()
-                .sum();
+    fn get_score(self:&Board, numbers:&Vec<u32>) -> u32 {
+        let number_set:HashSet<u32> = numbers.iter().cloned().collect();
 
-            Some(rest_sum * numbers.last().unwrap())
-        } else {
-            None
-        }
+        self.board_numbers
+            .difference(&number_set)
+            .copied()
+            .sum::<u32>() * numbers.last().unwrap()
+
     }
 }
 
-fn parse_game_context(list:Vec<&str>) -> (Vec<u32>, Vec<Board>) {
+fn parse_game_context(list:Vec<&str>) -> (VecDeque<u32>, Vec<Board>) {
     let mut it = list.iter();
 
-    let numbers:Vec<u32>  = it.next().unwrap().split(",")
+    let numbers:VecDeque<u32>  = it.next().unwrap().split(",")
         .map(|item| item.parse().unwrap())
         .collect();
 
@@ -76,16 +74,16 @@ fn parse_game_context(list:Vec<&str>) -> (Vec<u32>, Vec<Board>) {
 
 fn part1(list:Vec<&str>) -> String {
 
-    let (numbers,  boards) = parse_game_context(list);
+    let (mut numbers, boards) = parse_game_context(list);
+    let mut drawn_numbers = vec![];
 
-    for index in 0..numbers.len() {
-        let current_sequence:Vec<u32> = numbers.iter().enumerate().filter( |&(i, _)| i <= index ).map(|(_,n)|n).copied().collect();
+    for _ in 0..numbers.len() {
+        drawn_numbers.push(numbers.pop_front().unwrap());
 
-        let result = boards.iter().map( |b| b.has_bingo(&current_sequence))
-            .find(|r| r.is_some());
+        let winning_board = boards.iter().find(|b| b.has_bingo(&drawn_numbers));
 
-        if result.is_some() {
-            return result.unwrap().unwrap().to_string();
+        if winning_board.is_some() {
+            return winning_board.unwrap().get_score(&drawn_numbers).to_string()
         }
     }
 
@@ -95,17 +93,18 @@ fn part1(list:Vec<&str>) -> String {
 
 fn part2(list:Vec<&str>) -> String {
 
-    let (numbers, mut boards) = parse_game_context(list);
+    let (mut numbers, mut boards) = parse_game_context(list);
+    let mut drawn_numbers = vec![];
 
-    for index in 0..numbers.len() {
-        let current_sequence:Vec<u32> = numbers.iter().enumerate().filter( |&(i, _)| i <= index ).map(|(_,n)|n).copied().collect();
+    for _ in 0..numbers.len() {
+        drawn_numbers.push(numbers.pop_front().unwrap());
 
         if boards.len() > 1 {
             // Remove all boards with bingo
             let mut i = 0;
             while i < boards.len() {
 
-                if boards.get(i).unwrap().has_bingo(&current_sequence).is_some() {
+                if boards.get(i).unwrap().has_bingo(&drawn_numbers) {
                     // remove board
                     boards.remove(i);
                 } else {
@@ -114,11 +113,9 @@ fn part2(list:Vec<&str>) -> String {
             }
         } else {
             // Only one board remaining, play it until it has bingo...
-            let result = boards.first().unwrap().has_bingo(&current_sequence);
-            if result.is_some() {
-                return result.unwrap().to_string();
-            } else {
-                continue;
+            let remaining_board = boards.first().unwrap();
+            if remaining_board.has_bingo(&drawn_numbers) {
+                return remaining_board.get_score(&drawn_numbers).to_string();
             }
         }
     }
