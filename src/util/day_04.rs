@@ -22,20 +22,17 @@ impl Board {
     fn new(numbers:Vec<u32>) -> Board {
         let mut rows_and_cols = vec![];
 
-        for row in 0..5 {
-            let mut set = HashSet::new();
-            for col in 0..5 {
-                set.insert(*numbers.get(row * 5 + col).unwrap());
-            }
-            rows_and_cols.push(set);
-        }
+        for x in 0..5 {
+            let mut set_row = HashSet::new();
+            let mut set_col = HashSet::new();
 
-        for col in 0..5 {
-            let mut set = HashSet::new();
-            for row in 0..5 {
-                set.insert(*numbers.get(row * 5 + col).unwrap());
+            for y in 0..5 {
+                set_row.insert(*numbers.get(x * 5 + y).unwrap());
+                set_col.insert(*numbers.get(y * 5 + x).unwrap());
+
             }
-            rows_and_cols.push(set);
+            rows_and_cols.push(set_row);
+            rows_and_cols.push(set_col);
         }
 
         Board{ board_numbers: numbers.iter().copied().collect(), rows_and_cols}
