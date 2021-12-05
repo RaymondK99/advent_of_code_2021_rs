@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
@@ -21,12 +22,11 @@ fn part1(lines:Vec<&str>) -> String {
 
     let gamma:u32 = (0..width)
         .map(|pos| count_ones(&lines, pos))
-       .rev().enumerate()
+        .rev().enumerate()
         .map(|(index, cnt)|
-            if cnt > no_lines/2 {
-                1 << index
-            } else {
-                0
+            match cnt.cmp(&(no_lines / 2)) {
+                Ordering::Greater => 1 << index,
+                _ => 0,
             })
         .sum();
 
