@@ -2,22 +2,22 @@ use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
 
-    let numbers:Vec<u32> = input.lines()
-        .map(|line| line.parse().unwrap())
+    let lines:Vec<&str> = input.lines()
         .collect();
 
     match part {
-        Part::Part1 => part1(numbers),
-        Part::Part2 => part2(numbers)
+        Part::Part1 => part1(lines),
+        Part::Part2 => part2(lines)
     }
 }
 
-fn part1(list:Vec<u32>) -> String {
+
+fn part1(lines:Vec<&str>) -> String {
     "1".to_string()
 }
 
 
-fn part2(list:Vec<u32>) -> String {
+fn part2(lines:Vec<&str>) -> String {
     "1".to_string()
 }
 
