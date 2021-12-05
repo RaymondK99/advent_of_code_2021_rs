@@ -8,9 +8,8 @@ mod day_07;
 mod day_08;
 mod day_09;
 mod day_10;
-/*
 mod day_11;
-mod day_12;
+mod day_12; /*
 mod day_13;
 mod day_14;
 mod day_15;
@@ -46,9 +45,9 @@ pub fn get_solution(day:u8, part:Part, input:String) -> String {
         8 => day_08::solve(input, part),
         9 => day_09::solve(input, part),
         10 => day_10::solve(input, part),
-        /*
         11 => day_11::solve(input, part),
         12 => day_12::solve(input, part),
+        /*
         13 => day_13::solve(input, part),
         14 => day_14::solve(input, part),
         15 => day_15::solve(input, part),
