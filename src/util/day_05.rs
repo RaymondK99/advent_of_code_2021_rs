@@ -1,4 +1,4 @@
-use std::cmp::{max, min};
+use std::cmp::Ordering;
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
@@ -24,54 +24,41 @@ fn calculate_grid(lines:Vec<&str>, diagonal:bool) -> usize {
     let size = *coordinates.iter().max().unwrap() as usize + 1;
 
     let mut grid = Vec::new();
-    for _ in 0..size*size {
-        grid.push(0);
-    }
+    (0..size*size).into_iter().for_each(|_| grid.push(0));
 
-    let mut i = 0;
+    for chunk in coordinates.chunks(4) {
 
-    while i < coordinates.len() {
+        let x1 = chunk[0];
+        let y1 = chunk[1];
+        let x2 = chunk[2];
+        let y2 = chunk[3];
 
-        let x1 = *coordinates.get( i ).unwrap(); i +=1;
-        let y1 = *coordinates.get( i ).unwrap(); i +=1;
-        let x2 = *coordinates.get( i ).unwrap(); i +=1;
-        let y2 = *coordinates.get( i ).unwrap(); i +=1;
-
-        if x1 == x2 {
-            // Vertical line
-            let y_max = max(y1, y2);
-            let y_min = min(y1, y2);
-            for y in y_min..=y_max {
-                *grid.get_mut(size*y as usize + x1 as usize).unwrap() += 1;
-            }
-        } else if y1 == y2 {
-            // Horizontal line
-            let x_max = max(x1, x2);
-            let x_min = min(x1, x2);
-            for x in x_min..=x_max {
-                *grid.get_mut(size*y1 as usize + x as usize).unwrap() += 1;
-            }
-        } else if diagonal {
-            let len = max(x1,x2) - min(x1,x2);
-            let xd = if x2 > x1 {
-                1
-            } else {
-                -1
-            };
-            let yd = if y2 > y1 {
-                1
-            } else {
-                -1
-            };
-
-            let mut x = x1;
-            let mut y = y1;
-            for _ in 0..=len {
-                *grid.get_mut(size*y as usize + x as usize).unwrap() += 1;
-                x += xd;
-                y += yd;
-            }
+        // Check if diagonal
+        if (x1 != x2 && y1 != y2) && !diagonal {
+            continue;
         }
+
+        let xd = match x2.cmp(&x1) {
+            Ordering::Greater => 1,
+            Ordering::Less => -1,
+            _ => 0
+        };
+
+        let yd = match y2.cmp(&y1) {
+            Ordering::Greater => 1,
+            Ordering::Less => -1,
+            _ => 0
+        };
+
+        let mut x = x1;
+        let mut y = y1;
+        while x != x2 || y != y2 {
+            *grid.get_mut(size*y as usize + x as usize).unwrap() += 1;
+            y += yd;
+            x += xd;
+        }
+
+        *grid.get_mut(size*y as usize + x as usize).unwrap() += 1;
     }
 
     grid.iter().filter(|&point| *point > 1 ).count()
@@ -80,7 +67,6 @@ fn calculate_grid(lines:Vec<&str>, diagonal:bool) -> usize {
 fn part1(lines:Vec<&str>) -> String {
     calculate_grid(lines, false).to_string()
 }
-
 
 fn part2(lines:Vec<&str>) -> String {
     calculate_grid(lines, true).to_string()
