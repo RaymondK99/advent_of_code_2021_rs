@@ -25,7 +25,7 @@ fn calc_pos(numbers:&Vec<usize>) -> Vec<usize> {
 fn calc(positions:&Vec<usize>,  pos: usize, part_two:bool) -> usize {
     let mut fuel= 0;
     let mut index = pos;
-    
+
     for i in 0..positions.len() {
         let dist = max(pos,i) - min(pos, i);
         if !part_two {
