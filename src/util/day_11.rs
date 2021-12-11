@@ -111,16 +111,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let input = "4738615556
-6744423741
-2812868827
-8844365624
-4546674266
-4518674278
-7457237431
-4524873247
-3153341314
-3721414667";
+        let input = include_str!("../../input_11.txt");
 
         assert_eq!("1615", solve(input.to_string(), Part1));
     }
@@ -144,16 +135,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let input = "4738615556
-6744423741
-2812868827
-8844365624
-4546674266
-4518674278
-7457237431
-4524873247
-3153341314
-3721414667";
+        let input = include_str!("../../input_11.txt");
 
         assert_eq!("249", solve(input.to_string(), Part2));
     }
