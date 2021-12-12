@@ -34,7 +34,7 @@ fn do_step(grid:&mut HashMap<(i32,i32),i32>) -> usize {
             let adjacent = vec![(x-1, y), (x-1, y-1), (x-1, y+1), (x, y-1), (x, y+1), (x+1, y-1), (x+1, y), (x+1, y+1)];
 
             adjacent.iter().filter(|&pos| grid.contains_key(pos))
-                .for_each(|pos| increments.push_back(pos.clone()));
+                .for_each(|pos| increments.push_back(*pos));
         }
     }
 

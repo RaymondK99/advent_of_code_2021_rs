@@ -10,6 +10,7 @@ pub fn solve(input : String, part: Part) -> String {
         Part::Part1 => part1(lines),
         Part::Part2 => part2(lines)
     }
+
 }
 
 #[derive(Debug)]
@@ -38,9 +39,9 @@ impl Graph {
             let reverse_edge = edge.revert();
             if !reverse_edge.to.as_str().eq("start") {
                 if !graph.edges.contains_key(reverse_edge.from.as_str())  {
-                    graph.edges.insert(reverse_edge.from.clone(), vec![reverse_edge.to.to_string()]);
+                    graph.edges.insert(reverse_edge.from.clone(), vec![reverse_edge.to]);
                 } else {
-                    graph.edges.get_mut(reverse_edge.from.as_str()).unwrap().push(reverse_edge.to.to_string());
+                    graph.edges.get_mut(reverse_edge.from.as_str()).unwrap().push(reverse_edge.to);
                 }
             }
 
@@ -105,7 +106,7 @@ fn find_paths(graph:&Graph, current_node:&str, visited:HashMap<&str,u32>, path:V
 
     // Add current node to visited if its a small cave
     let small_cave = current_node.chars().all(|ch| ch.is_lowercase());
-    let mut next_path = path.clone();
+    let mut next_path = path;
 
     next_path.push(current_node.to_string());
 

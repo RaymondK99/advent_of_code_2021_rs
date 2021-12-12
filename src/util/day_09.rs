@@ -21,7 +21,7 @@ fn parse(lines:Vec<&str>) -> Vec<Vec<i32>> {
         .collect()
 }
 
-fn is_low_point(x:i32,y:i32,grid:&Vec<Vec<i32>>) -> bool {
+fn is_low_point(x:i32,y:i32,grid:&[Vec<i32>]) -> bool {
     let height = grid.len() as i32;
     let width = grid.first().unwrap().len() as i32;
     let current_height = grid.get(y as usize).unwrap().get(x as usize).unwrap();
@@ -37,7 +37,7 @@ fn is_low_point(x:i32,y:i32,grid:&Vec<Vec<i32>>) -> bool {
         .all(|&height| height > *current_height)
 }
 
-fn get_low_points(grid:&Vec<Vec<i32>>) -> Vec<(i32,i32,i32)>{
+fn get_low_points(grid:&[Vec<i32>]) -> Vec<(i32,i32,i32)>{
     let height = grid.len() as i32;
     let width = grid.first().unwrap().len() as i32;
 
@@ -51,7 +51,7 @@ fn get_low_points(grid:&Vec<Vec<i32>>) -> Vec<(i32,i32,i32)>{
     positions.iter().filter(|&(x,y,_)| is_low_point(*x,*y,&grid)).copied().collect()
 }
 
-fn get_adjacent((x1,y1):&(i32,i32), grid:&Vec<Vec<i32>>) -> Vec<(i32,i32,i32)> {
+fn get_adjacent((x1,y1):&(i32,i32), grid:&[Vec<i32>]) -> Vec<(i32,i32,i32)> {
     let height = grid.len() as i32;
     let width = grid.first().unwrap().len() as i32;
 
@@ -61,7 +61,7 @@ fn get_adjacent((x1,y1):&(i32,i32), grid:&Vec<Vec<i32>>) -> Vec<(i32,i32,i32)> {
         .collect()
 }
 
-fn get_basin_size((x_low,y_low,height_low):&(i32,i32,i32), grid:&Vec<Vec<i32>>) -> usize {
+fn get_basin_size((x_low,y_low,height_low):&(i32,i32,i32), grid:&[Vec<i32>]) -> usize {
     let mut basin = HashSet::new();
     let mut eval = vec![(*x_low,*y_low, *height_low)];
 
@@ -78,8 +78,8 @@ fn get_basin_size((x_low,y_low,height_low):&(i32,i32,i32), grid:&Vec<Vec<i32>>) 
             .collect();
 
         adjacent.iter().for_each(|item| {
-            basin.insert(item.clone());
-            eval.push( item.clone() )
+            basin.insert(*item);
+            eval.push( *item)
         });
     }
 

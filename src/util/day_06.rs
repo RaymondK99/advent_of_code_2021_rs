@@ -35,11 +35,11 @@ fn calculate_lanterns(numbers:Vec<u32>, turns:u32) -> String {
 }
 
 fn part1(numbers:Vec<u32>) -> String {
-    calculate_lanterns(numbers, 80).to_string()
+    calculate_lanterns(numbers, 80)
 }
 
 fn part2(numbers:Vec<u32>) -> String {
-    calculate_lanterns(numbers, 256).to_string()
+    calculate_lanterns(numbers, 256)
 }
 
 

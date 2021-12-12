@@ -100,7 +100,7 @@ fn part2(lines:Vec<&str>) -> String {
                 acc * 5 + value
              })).collect();
 
-    missing.sort();
+    missing.sort_unstable();
     missing.get( missing.len() / 2).unwrap().to_string()
 }
 

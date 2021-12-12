@@ -14,7 +14,7 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 
-fn calc_pos(numbers:&Vec<usize>) -> Vec<usize> {
+fn calc_pos(numbers:&[usize]) -> Vec<usize> {
     let max = numbers.iter().max().copied().unwrap();
     let mut deltas = Vec::with_capacity(max as usize);
     (0..=max).into_iter().for_each(|_| deltas.push(0));
@@ -22,7 +22,7 @@ fn calc_pos(numbers:&Vec<usize>) -> Vec<usize> {
     deltas
 }
 
-fn calc(positions:&Vec<usize>,  pos: usize, part_two:bool) -> usize {
+fn calc(positions:&[usize],  pos: usize, part_two:bool) -> usize {
     let mut fuel= 0;
     let mut index = pos;
 
