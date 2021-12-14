@@ -113,7 +113,6 @@ fn part2(lines:Vec<&str>) -> String {
         }
     });
 
-    print!("{}", print(&grid));
     print(&grid)
 }
 
