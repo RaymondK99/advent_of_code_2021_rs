@@ -1,5 +1,4 @@
-
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap};
 use std::cmp::Reverse;
 use super::Part;
 
@@ -14,116 +13,119 @@ pub fn solve(input : String, part: Part) -> String {
     }
 }
 
-#[derive(Ord, PartialOrd, Eq, PartialEq, Debug, Hash, Clone, Copy)]
-struct Pos {
-    x:i32,
-    y:i32,
+struct Grid {
+    data:Vec<Vec<usize>>,
+    height:usize,
+    width:usize,
 }
 
-#[derive(Ord, PartialOrd, Eq, PartialEq, Debug)]
-struct Node {
-    cost:usize,
-    position:Pos
-}
+impl Grid {
+    fn new(lines:Vec<&str>, mult:usize) -> Grid {
+        let mut grid = vec![];
+        let height = lines.len();
+        let width = lines.first().unwrap().len();
 
-impl Pos {
+        for y in 0..lines.len() * mult {
+            let line = lines.get(y % height).unwrap();
+            let tile_no_y = y / height;
 
-    fn new(x:i32,y:i32) -> Pos {
-        Pos{x:x,y:y}
+            let mut v = vec![];
+            for x in 0..line.len() * mult {
+                let cost = (line.as_bytes()[x % width] - 0x30) as usize;
+                let tile_no_x = x / width;
+                let risk_incr = tile_no_y + tile_no_x;
+                let risk = 1 + (risk_incr + cost - 1) % 9;
+                v.push(risk);
+            }
+            grid.push(v);
+        }
+
+        Grid{data:grid,height:height*mult,width:width*mult }
     }
 
-    fn get_adjacent(&self) -> Vec<Pos> {
-        vec![Pos::new(self.x-1,self.y), Pos::new(self.x+1,self.y), Pos::new(self.x,self.y-1), Pos::new(self.x,self.y+1)]
+    fn get_cost(&self, x:usize, y:usize) -> usize {
+        *self.data.get(y).unwrap().get(x).unwrap()
     }
 
+    fn get_adjacents(&self, x:usize, y:usize) -> Vec<(usize,usize,usize)> {
+        let mut v = vec![];
+        if x > 0 {
+            v.push((x-1,y))
+        }
+        if x < self.width-1 {
+            v.push((x+1,y))
+        }
+        if y > 0 {
+            v.push((x,y-1));
+        }
+        if y < self.height-1 {
+            v.push((x,y+1))
+        }
+
+        v.iter().map(|(x,y)| (*x,*y,self.get_cost(*x,*y))).collect()
+    }
 }
 
 
-fn find_path(grid:&HashMap<Pos,usize>) -> usize {
-    let end_x = grid.iter().map(|(p,_)| p.x).max().unwrap();
-    let end_y = grid.iter().map(|(p,_)| p.y).max().unwrap();
-    let end_pos = Pos::new(end_x, end_y);
 
-    let start_node = Node{cost:0, position:Pos::new(0,0)};
-    let mut visited = HashMap::new();
+
+fn find_path(grid:&Grid) -> usize {
+    let end_x = grid.width - 1;
+    let end_y = grid.height - 1;
+
+    let start_node:(usize,usize,usize) = (0,0,0);
+    let mut visited = vec![std::usize::MAX; grid.width * grid.height];
     let mut pq = BinaryHeap::new();
 
     pq.push(Reverse(start_node));
 
     while !pq.is_empty() {
-        let current_node = pq.pop().unwrap().0;
+        let (current_cost, x,y) = pq.pop().unwrap().0;
 
-        if current_node.position.eq(&end_pos) {
-            return current_node.cost
+        if x == end_x && y == end_y {
+            return current_cost;
         }
 
-        if let Some(prev_visit) = visited.get_mut(&current_node.position) {
-            // Is this a closer path
-            if current_node.cost < *prev_visit {
-                visited.insert(current_node.position, current_node.cost);
-            } else {
-                // This path is longer.. skip
-                continue;
-            }
+        let prev_visit = visited.get_mut(y * grid.width + x).unwrap();
+
+        // Is this a closer path
+        if current_cost < *prev_visit {
+            *prev_visit = current_cost;
         } else {
-            visited.insert(current_node.position, current_node.cost);
+            // This path is longer.. skip
+            continue;
         }
-
 
         // Get neighbouring nodes...
-        let adjacent_nodes:Vec<Node> = current_node.position.get_adjacent()
-            .iter()
-            .map(|pos| (pos, grid.get(pos)))
-            .filter(|(_,item)|item.is_some())
-            .map(|(pos, cost)|
-                Node{cost:*cost.unwrap() + current_node.cost,position:Pos::new(pos.x,pos.y)})
-            .collect();
-
-        // Add to prio queue for evaluation
-        for n in adjacent_nodes {
-            pq.push(Reverse(n));
+        let adjacent = grid.get_adjacents(x, y);
+        for (x1,y1,cost) in adjacent {
+            if let Some(next_cost) = visited.get_mut(y1 * grid.width + x1) {
+                if (current_cost + cost) < *next_cost {
+                    pq.push(Reverse((current_cost + cost, x1, y1)));
+                }
+            } else {
+                pq.push(Reverse((current_cost + cost, x1, y1)));
+            }
         }
-
     }
 
     panic!("No solution...")
 }
 
-fn parse(lines:Vec<&str>, mult:usize) -> HashMap<Pos,usize>{
-    let mut map = HashMap::new();
-    let height = lines.len();
-    let width = lines.first().unwrap().len();
 
-    for y in 0..height*mult {
-        let tile_no_y = y / height;
-        let line = lines.get( y % height).unwrap();
-        for x in 0..width*mult {
-            let tile_no_x = x / width;
-            let risk_incr = tile_no_y + tile_no_x;
-            let risk = *line.as_bytes().get(x % width).unwrap() as usize - 0x30 as usize;
-            let mod_risk = if (risk + risk_incr) > 9 {
-                (risk_incr + risk) % 9
-            } else {
-                risk + risk_incr
-            };
-            map.insert(Pos::new(x as i32,y as i32), mod_risk);
-        }
-    }
-
-    map
-}
 
 fn part1(lines:Vec<&str>) -> String {
-    let grid = parse(lines,1);
-
+    let grid = Grid::new(lines, 1);
     let result = find_path(&grid);
+
     result.to_string()
 }
 
 fn part2(lines:Vec<&str>) -> String {
-    let grid = parse(lines, 5);
+    let grid = Grid::new(lines, 5);
 
     let result = find_path(&grid);
+
     result.to_string()
 }
 
