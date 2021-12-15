@@ -102,7 +102,7 @@ fn parse(lines:Vec<&str>, mult:usize) -> HashMap<Pos,usize>{
             let risk_incr = tile_no_y + tile_no_x;
             let risk = *line.as_bytes().get(x % width).unwrap() as usize - 0x30 as usize;
             let mod_risk = if (risk + risk_incr) > 9 {
-                risk_incr + risk - 9
+                (risk_incr + risk) % 9
             } else {
                 risk + risk_incr
             };
