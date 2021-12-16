@@ -96,16 +96,12 @@ impl PacketComputer {
             .chars()
             .map(|ch| u8::from_str_radix(&ch.to_string(), 16).unwrap())
             .map(|byte| {
-                let mut bits = vec![];
+                let mut nibble = vec![];
                 for bit_no in 0..4 {
-                    if byte >> bit_no & 1 > 0 {
-                        bits.push(true);
-                    } else {
-                        bits.push(false);
-                    }
+                    nibble.push(byte >> bit_no & 1 > 0);
                 }
-                bits.reverse();
-                bits
+                nibble.reverse();
+                nibble
             })
             .flatten()
             .collect();
