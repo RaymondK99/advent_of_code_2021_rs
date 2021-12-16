@@ -24,6 +24,7 @@ mod day_23;
 mod day_24;
 mod day_25;
 
+mod packet_computer;
 
 #[derive(PartialEq,Copy, Clone)]
 pub enum Part {
