@@ -1,3 +1,5 @@
+extern crate core;
+
 use std::io::prelude::*;
 use std::env;
 

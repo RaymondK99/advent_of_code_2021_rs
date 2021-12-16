@@ -14,7 +14,7 @@ enum TypeID {
     MIN = 2,
     MAX = 3,
     LITERAL = 4,
-    GreatherThan = 5,
+    GreaterThan = 5,
     LessThan = 6,
     EQUAL = 7,
 }
@@ -54,27 +54,9 @@ impl Packet for OperatorPacket {
             TypeID::PRODUCT => values.iter().fold(1, |acc,it| acc * it),
             TypeID::MIN => *values.iter().min().unwrap(),
             TypeID::MAX => *values.iter().max().unwrap(),
-            TypeID::GreatherThan => {
-                if values[0] > values[1] {
-                    1
-                } else{
-                    0
-                }
-            },
-            TypeID::LessThan => {
-                if values[0] < values[1] {
-                    1
-                } else{
-                    0
-                }
-            },
-            TypeID::EQUAL => {
-                if values[0] == values[1] {
-                    1
-                } else{
-                    0
-                }
-            },
+            TypeID::GreaterThan => (values[0] > values[1]) as u64,
+            TypeID::LessThan => (values[0] < values[1]) as u64,
+            TypeID::EQUAL => (values[0] == values[1]) as u64,
             _ => panic!("not impl"),
         }
     }
@@ -118,7 +100,7 @@ impl PacketComputer {
             (0..no_packets).into_iter().map(|_| self.process_packet()).collect()
         };
 
-        Box::new(OperatorPacket{sub_packets, type_id })
+        Box::new(OperatorPacket {sub_packets, type_id })
     }
 
     fn process_packet(&mut self) -> Box<dyn Packet> {
@@ -172,7 +154,7 @@ impl PacketComputer {
             2 => TypeID::MIN,
             3 => TypeID::MAX,
             4 => TypeID::LITERAL,
-            5 => TypeID::GreatherThan,
+            5 => TypeID::GreaterThan,
             6 => TypeID::LessThan,
             7 => TypeID::EQUAL,
             _ => panic!("unknown operator"),
