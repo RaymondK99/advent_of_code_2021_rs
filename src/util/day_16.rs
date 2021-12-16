@@ -34,41 +34,21 @@ mod tests {
 
     #[test]
     fn test1() {
+        let input1 = "D2FE28";
+        let input2 = "38006F45291200";
+        let input3 = "EE00D40C823060";
+        let input4 = "8A004A801A8002F478";
+        let input5 = "620080001611562C8802118E34";
+        let input6 = "C0015000016115A2E0802F182340";
+        let input7 = "A0016C880162017C3686B18A3D4780";
 
-        let input = "D2FE28";
-
-        assert_eq!("6", solve(input.to_string(), Part1));
-    }
-
-    #[test]
-    fn test11() {
-
-        let input = "38006F45291200";
-        assert_eq!("9", solve(input.to_string(), Part1));
-    }
-
-    #[test]
-    fn test12() {
-
-        let input = "EE00D40C823060";
-
-        assert_eq!("14", solve(input.to_string(), Part1));
-    }
-
-
-    #[test]
-    fn test13() {
-
-        let input1 = "8A004A801A8002F478";
-        let input2 = "620080001611562C8802118E34";
-        let input3 = "C0015000016115A2E0802F182340";
-        let input4 = "A0016C880162017C3686B18A3D4780";
-
-        assert_eq!("16", solve(input1.to_string(), Part1));
-        assert_eq!("12", solve(input2.to_string(), Part1));
-        assert_eq!("23", solve(input3.to_string(), Part1));
-        assert_eq!("31", solve(input4.to_string(), Part1));
-
+        assert_eq!("6", solve(input1.to_string(), Part1));
+        assert_eq!("9", solve(input2.to_string(), Part1));
+        assert_eq!("14", solve(input3.to_string(), Part1));
+        assert_eq!("16", solve(input4.to_string(), Part1));
+        assert_eq!("12", solve(input5.to_string(), Part1));
+        assert_eq!("23", solve(input6.to_string(), Part1));
+        assert_eq!("31", solve(input7.to_string(), Part1));
     }
 
 
