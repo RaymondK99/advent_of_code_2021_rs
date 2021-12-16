@@ -12,7 +12,7 @@ pub fn solve(input : String, part: Part) -> String {
 
 #[derive(Debug)]
 struct PacketComputer {
-    bits:VecDeque<u8>,
+    bits:VecDeque<bool>,
     offset:usize,
     version_sum:u64,
 }
@@ -92,13 +92,17 @@ impl Packet for OperatorPacket {
 
 impl PacketComputer {
     fn new(line:&str) -> PacketComputer {
-        let bits: VecDeque<u8> = line
+        let bits: VecDeque<bool> = line
             .chars()
             .map(|ch| u8::from_str_radix(&ch.to_string(), 16).unwrap())
             .map(|byte| {
                 let mut bits = vec![];
                 for bit_no in 0..4 {
-                    bits.push(byte >> bit_no & 1);
+                    if byte >> bit_no & 1 > 0 {
+                        bits.push(true);
+                    } else {
+                        bits.push(false);
+                    }
                 }
                 bits.reverse();
                 bits
