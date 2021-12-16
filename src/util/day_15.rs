@@ -1,5 +1,5 @@
 use std::collections::{BinaryHeap};
-use std::cmp::Reverse;
+use std::cmp::{Ordering};
 use super::Part;
 
 pub fn solve(input : String, part: Part) -> String {
@@ -14,10 +14,11 @@ pub fn solve(input : String, part: Part) -> String {
 }
 
 struct Grid {
-    data:Vec<Vec<usize>>,
+    data:Vec<Vec<u8>>,
     height:usize,
     width:usize,
 }
+
 
 impl Grid {
     fn new(lines:Vec<&str>, mult:usize) -> Grid {
@@ -31,10 +32,10 @@ impl Grid {
 
             let mut v = vec![];
             for x in 0..line.len() * mult {
-                let cost = (line.as_bytes()[x % width] - 0x30) as usize;
+                let cost = line.as_bytes()[x % width] - 0x30;
                 let tile_no_x = x / width;
                 let risk_incr = tile_no_y + tile_no_x;
-                let risk = 1 + (risk_incr + cost - 1) % 9;
+                let risk = 1 + (risk_incr as u8 + cost - 1) % 9;
                 v.push(risk);
             }
             grid.push(v);
@@ -44,7 +45,7 @@ impl Grid {
     }
 
     fn get_cost(&self, x:usize, y:usize) -> usize {
-        *self.data.get(y).unwrap().get(x).unwrap()
+        *self.data.get(y).unwrap().get(x).unwrap() as usize
     }
 
     fn get_adjacents(&self, x:usize, y:usize) -> Vec<(usize,usize,usize)> {
@@ -67,20 +68,45 @@ impl Grid {
 }
 
 
+#[derive(Eq,PartialEq)]
+struct Node {
+    cost:usize,
+    x:usize,
+    y:usize
+}
+
+
+
+impl Ord for Node {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other.cost.cmp(&self.cost)
+    }
+}
+
+impl PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+
 
 
 fn find_path(grid:&Grid) -> usize {
     let end_x = grid.width - 1;
     let end_y = grid.height - 1;
 
-    let start_node:(usize,usize,usize) = (0,0,0);
+    let start_node = Node{cost:0,x:0,y:0};
     let mut visited = vec![std::usize::MAX; grid.width * grid.height];
     let mut pq = BinaryHeap::new();
 
-    pq.push(Reverse(start_node));
+    pq.push(start_node);
 
     while !pq.is_empty() {
-        let (current_cost, x,y) = pq.pop().unwrap().0;
+        let current_node = pq.pop().unwrap();
+        let current_cost = current_node.cost;
+        let x = current_node.x;
+        let y = current_node.y;
 
         if x == end_x && y == end_y {
             return current_cost;
@@ -101,10 +127,10 @@ fn find_path(grid:&Grid) -> usize {
         for (x1,y1,cost) in adjacent {
             if let Some(next_cost) = visited.get_mut(y1 * grid.width + x1) {
                 if (current_cost + cost) < *next_cost {
-                    pq.push(Reverse((current_cost + cost, x1, y1)));
+                    pq.push(Node{cost:current_cost + cost, x:x1, y:y1});
                 }
             } else {
-                pq.push(Reverse((current_cost + cost, x1, y1)));
+                pq.push(Node{cost:current_cost + cost, x:x1, y:y1});
             }
         }
     }
