@@ -68,12 +68,10 @@ impl PacketComputer {
             .chars()
             .map(|ch| u8::from_str_radix(&ch.to_string(), 16).unwrap())
             .map(|byte| {
-                let mut nibble = vec![];
-                for bit_no in 0..4 {
-                    nibble.push(byte >> bit_no & 1 > 0);
-                }
-                nibble.reverse();
-                nibble
+                vec![byte >> 3 & 1 > 0,
+                     byte >> 2 & 1 > 0,
+                     byte >> 1 & 1 > 0,
+                     byte & 1 > 0 ]
             })
             .flatten()
             .collect();
