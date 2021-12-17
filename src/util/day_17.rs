@@ -52,7 +52,7 @@ impl Trajectory {
 
     fn fire(&mut self, area:&Area) -> Option<i32> {
         let mut max_y = self.y;
-        for _ in 0..1000 {
+        loop {
             self.advance();
 
             max_y = max(max_y, self.y);
