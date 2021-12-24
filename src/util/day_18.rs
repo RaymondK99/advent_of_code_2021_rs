@@ -219,7 +219,7 @@ impl SnailNumber {
         } else if self.elements.len() == 5 {
             let left = self.get_number(1).unwrap();
             let right = self.get_number(3).unwrap();
-            return 3*left + 2*right;
+            return 3 * left + 2 * right;
         } else {
             let mut depth = 0;
             for i in 0..self.elements.len() {
@@ -266,7 +266,6 @@ fn part1(lines:Vec<&str>) -> String {
 
 
 fn part2(lines:Vec<&str>) -> String {
-
     let numbers:Vec<SnailNumber> = lines.iter().map(|line| SnailNumber::parse(line))
         .collect();
 
@@ -282,7 +281,6 @@ fn part2(lines:Vec<&str>) -> String {
             let mut second = SnailNumber::from(numbers.get(n).unwrap());
             first.add(&mut second);
             first.reduce();
-
             magnitudes.push(first.magnitude());
         }
     }
