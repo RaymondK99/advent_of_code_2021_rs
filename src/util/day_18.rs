@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use util::day_18::Element::{COMMA, EndBracket, NUMBER, StartBracket};
 use super::Part;
 
@@ -123,15 +122,21 @@ impl SnailNumber {
         }
     }
 
-    fn add(&mut self, mut other:SnailNumber) {
+    fn add(&mut self, other: &mut SnailNumber) {
 
-        self.push_front(StartBracket);
-        self.push_back(COMMA);
+        if self.elements.is_empty() {
+            while !other.elements.is_empty() {
+                self.push_back(other.pop_front());
+            }
+        } else {
+            self.push_front(StartBracket);
+            self.push_back(COMMA);
 
-        while !other.elements.is_empty() {
-            self.push_back(other.pop_front());
+            while !other.elements.is_empty() {
+                self.push_back(other.pop_front());
+            }
+            self.push_back(EndBracket);
         }
-        self.push_back(EndBracket);
     }
 
     fn push_front(&mut self, element:Element) {
@@ -249,30 +254,21 @@ impl SnailNumber {
 }
 
 fn part1(lines:Vec<&str>) -> String {
+    lines.iter()
+        .map(|line| SnailNumber::parse(line))
+        .fold( SnailNumber{elements:vec![]}, |mut acc, mut elem| {
+            acc.add(&mut elem);
+            acc.reduce();
+            acc })
+        .magnitude().to_string()
 
-    let mut numbers:VecDeque<SnailNumber> = lines.iter().map(|line| SnailNumber::parse(line)).collect();
-
-    let mut number = numbers.pop_front().unwrap();
-    number.reduce();
-
-    while !numbers.is_empty() {
-        let mut next = numbers.pop_front().unwrap();
-        next.reduce();
-
-        number.add(next);
-        number.reduce();
-    }
-
-    number.magnitude().to_string()
 }
 
 
 fn part2(lines:Vec<&str>) -> String {
 
-    let mut numbers:Vec<SnailNumber> = lines.iter().map(|line| SnailNumber::parse(line))
+    let numbers:Vec<SnailNumber> = lines.iter().map(|line| SnailNumber::parse(line))
         .collect();
-
-    numbers.iter_mut().for_each(|number| number.reduce());
 
     let mut magnitudes = vec![];
 
@@ -283,8 +279,8 @@ fn part2(lines:Vec<&str>) -> String {
             }
 
             let mut first = SnailNumber::from(numbers.get(i).unwrap());
-            let second = SnailNumber::from(numbers.get(n).unwrap());
-            first.add(second);
+            let mut second = SnailNumber::from(numbers.get(n).unwrap());
+            first.add(&mut second);
             first.reduce();
 
             magnitudes.push(first.magnitude());
