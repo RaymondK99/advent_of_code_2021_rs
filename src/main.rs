@@ -1,5 +1,7 @@
 extern crate core;
 extern crate regex;
+extern crate permute;
+extern crate proc_macro;
 
 use std::io::prelude::*;
 use std::env;
